@@ -43,6 +43,8 @@ public class RearrangeableLayout extends ViewGroup {
     private Rect mChildStartRect;
     private Rect mChildEndRect;
 
+    private int intH, intW;
+
     public RearrangeableLayout(Context context) {
         this(context, null);
     }
@@ -109,6 +111,8 @@ public class RearrangeableLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        intW = widthMeasureSpec;
+        intH = heightMeasureSpec;
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
 
@@ -195,6 +199,24 @@ public class RearrangeableLayout extends ViewGroup {
         int r = l + mSelectedChild.getMeasuredWidth();
         int b = t + mSelectedChild.getMeasuredHeight();
 
+        int width = MeasureSpec.getSize(intW);
+        int height = MeasureSpec.getSize(intH);
+
+        width = Math.max(width, getMinimumWidth());
+        height = Math.max(height, getMinimumHeight());
+
+        if(r >  width){
+            r = width;
+            l = width - mSelectedChild.getMeasuredWidth();
+            Log.e("Left-Right", l + " " + r + " " + height + " " + mSelectedChild.getMeasuredWidth());
+        }
+
+        if(b > height){
+            b = height;
+            t = height - mSelectedChild.getMeasuredHeight();
+            Log.e("Top-Bottom", t + " " + b + " " + height + " " + mSelectedChild.getMeasuredHeight());
+        }
+
         lp.moved = true;
         mSelectedChild.layout(l, t, r, b);
     }
@@ -237,6 +259,7 @@ public class RearrangeableLayout extends ViewGroup {
         }
         return false;
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
